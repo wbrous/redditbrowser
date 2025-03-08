@@ -46,6 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
   showNSFW = false;
   showAgeVerification = false;
   private hasVerifiedAge = false;
+  hasHiddenNSFWResults = false;
 
   constructor(
     private http: HttpClient,
@@ -130,16 +131,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   searchPosts() {
     this.loading = true;
-    this.posts = [];
-    this.after = '';
     let url = 'https://www.reddit.com';
     
-    // Add NSFW parameter if enabled
-    const params = ['raw_json=1'];
-    if (this.showNSFW) {
-      params.push('include_over_18=1');
-    }
-
+    // First fetch without NSFW to check for hidden content
     if (this.subredditFilter.trim()) {
       url += `/r/${encodeURIComponent(this.subredditFilter)}`;
     } else {
@@ -147,15 +141,23 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     if (this.searchQuery.trim()) {
-      url += `/search.json?${params.join('&')}&q=${encodeURIComponent(this.searchQuery)}`;
+      url += `/search.json?q=${encodeURIComponent(this.searchQuery)}&include_over_18=true`;
     } else {
-      url += `/hot.json?${params.join('&')}`;
+      url += '/hot.json?include_over_18=true';
     }
 
     this.http.get<any>(url)
       .subscribe({
         next: (response) => {
-          this.posts = response.data.children;
+          const allPosts = response.data.children;
+          const visiblePosts = this.showNSFW ? 
+            allPosts : 
+            allPosts.filter((post: any) => !post.data.over_18);
+          
+          this.hasHiddenNSFWResults = !this.showNSFW && 
+            allPosts.length > visiblePosts.length;
+          
+          this.posts = visiblePosts;
           this.loading = false;
         },
         error: (error) => {

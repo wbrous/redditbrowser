@@ -670,3 +670,41 @@ main {
   background: #ff4500;
   color: #1a1a1b;
 }
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: inherit;
+}
+
+.nsfw-notice {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: rgba(255, 69, 0, 0.1);
+}
+
+.nsfw-toggle-button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid #ff4500;
+  border-radius: 20px;
+  background: transparent;
+  color: #ff4500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.nsfw-toggle-button:hover {
+  background-color: #ff4500;
+  color: white;
+}
+
+.dark-mode .nsfw-notice {
+  background-color: rgba(255, 69, 0, 0.15);
+}
+
+.dark-mode .nsfw-toggle-button:hover {
+  color: #1a1a1b;
+}
